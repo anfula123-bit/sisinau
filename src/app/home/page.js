@@ -83,6 +83,27 @@ export default function HomePage() {
                     );
                 })}
             </div>
+
+            {/* Footer SEO Links */}
+            <footer style={{ 
+                marginTop: 'var(--space-2xl)', 
+                padding: 'var(--space-xl) var(--space-lg)', 
+                borderTop: '1px solid var(--border-glass)', 
+                textAlign: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 'var(--space-sm)'
+            }}>
+                <div style={{ display: 'flex', gap: 'var(--space-lg)', flexWrap: 'wrap', justifyContent: 'center' }}>
+                    <Link href="/tentang" style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textDecoration: 'none', transition: 'color 0.2s' }}>Tentang Kami</Link>
+                    <Link href="/privasi" style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textDecoration: 'none', transition: 'color 0.2s' }}>Kebijakan Privasi</Link>
+                    <Link href="/kontak" style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textDecoration: 'none', transition: 'color 0.2s' }}>Hubungi Kami</Link>
+                </div>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', margin: 0, opacity: 0.6 }}>
+                    © 2026 Sisinau. Platform E-Learning Premium Indonesia.
+                </p>
+            </footer>
         </main>
     );
 }

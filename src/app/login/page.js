@@ -40,6 +40,17 @@ export default function LoginPage() {
                     showToast("Password salah!", "error");
                     return;
                 }
+
+                // Fetch and cache the profile avatar on login
+                const { data: profData } = await supabase
+                    .from('profiles')
+                    .select('avatar_url')
+                    .eq('username', trimmedUser)
+                    .maybeSingle();
+                
+                if (profData && profData.avatar_url) {
+                    localStorage.setItem('profile_avatar_' + trimmedUser, profData.avatar_url);
+                }
             } catch (err) {
                 console.error(err);
                 showToast("Terjadi kesalahan koneksi database!", "error");

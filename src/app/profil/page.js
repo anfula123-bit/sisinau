@@ -61,6 +61,8 @@ export default function ProfilPage() {
                         if (profData.avatar_url) {
                             setAvatar(profData.avatar_url);
                             setTempAvatar(profData.avatar_url);
+                            localStorage.setItem('profile_avatar_' + loggedIn, profData.avatar_url);
+                            window.dispatchEvent(new Event('userAvatarChange'));
                         }
                         setXp(profData.xp || 0);
                     } else {

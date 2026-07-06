@@ -107,6 +107,38 @@
     --shadow-glow-strong: 0 0 50px rgba(249, 115, 22, 0.12);
 }
 
+/* ---- Custom Scrollbar ---- */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 8px;
+    border: 2px solid transparent;
+}
+*:hover::-webkit-scrollbar-thumb,
+html:hover::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    background-clip: padding-box;
+}
+.light-theme *:hover::-webkit-scrollbar-thumb,
+.light-theme html:hover::-webkit-scrollbar-thumb {
+    background: rgba(15, 23, 42, 0.15);
+    background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+    background-clip: padding-box !important;
+}
+.light-theme ::-webkit-scrollbar-thumb:hover {
+    background: rgba(15, 23, 42, 0.3) !important;
+    background-clip: padding-box !important;
+}
+
 /* ---- Reset & Base ---- */
 *,
 *::before,

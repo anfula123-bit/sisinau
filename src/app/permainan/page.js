@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import QuizModal from '../../components/QuizModal';
 import { useToast } from '../../components/ToastContext';
+import WordGuessModal from '../../components/WordGuessModal';
+import MemoryMatchModal from '../../components/MemoryMatchModal';
 
 const KATEGORI_KUIS = [
     { name: 'Fisika', color: '#a855f7', bgGlow: 'rgba(168, 85, 247, 0.15)' },
@@ -27,6 +29,8 @@ function PermainanContent() {
     const [stats, setStats] = useState({ completed: 0, avgScore: 0 });
     const [xp, setXp] = useState(0);
     const [activeKategori, setActiveKategori] = useState(null);
+    const [showWordGuess, setShowWordGuess] = useState(false);
+    const [showMemoryMatch, setShowMemoryMatch] = useState(false);
 
     // Auth & Load Stats
     useEffect(() => {
@@ -141,31 +145,35 @@ function PermainanContent() {
                         </div>
                     </div>
 
-                    {/* Game Card 2: Word Guessing (Placeholder) */}
-                    <div className="game-card game-card--disabled">
+                    {/* Game Card 2: Word Guessing (Active) */}
+                    <div className="game-card game-card--active">
                         <div className="game-card__header">
-                            <span className="game-card__badge game-card__badge--soon">Segera Hadir</span>
+                            <span className="game-card__badge game-card__badge--play">Bisa Dimainkan</span>
                             <h2>Tebak Kata Sains 🔠</h2>
                         </div>
                         <p className="game-card__desc">
                             Tebak kosakata ilmiah berdasarkan petunjuk yang diberikan. Menguji kemampuan memori dan pemahaman glosarium materi pelajaranmu!
                         </p>
-                        <div className="game-card__footer">
-                            <button className="btn btn--disabled" disabled>Kunci Terbuka di Level Berikutnya</button>
+                        <div className="game-card__footer" style={{ marginTop: 'var(--space-md)' }}>
+                            <button className="btn btn--primary" onClick={() => setShowWordGuess(true)} style={{ width: '100%' }}>
+                                Mainkan Tebak Kata 🎮
+                            </button>
                         </div>
                     </div>
 
-                    {/* Game Card 3: Memory Match (Placeholder) */}
-                    <div className="game-card game-card--disabled">
+                    {/* Game Card 3: Memory Match (Active) */}
+                    <div className="game-card game-card--active">
                         <div className="game-card__header">
-                            <span className="game-card__badge game-card__badge--soon">Segera Hadir</span>
+                            <span className="game-card__badge game-card__badge--play">Bisa Dimainkan</span>
                             <h2>Memory Match Matematika 🧪</h2>
                         </div>
                         <p className="game-card__desc">
                             Cocokkan rumus matematika atau definisi kimia dengan pasangan yang tepat dalam batas waktu yang ditentukan. Melatih reflek berpikir cepat!
                         </p>
-                        <div className="game-card__footer">
-                            <button className="btn btn--disabled" disabled>Segera Rilis</button>
+                        <div className="game-card__footer" style={{ marginTop: 'var(--space-md)' }}>
+                            <button className="btn btn--primary" onClick={() => setShowMemoryMatch(true)} style={{ width: '100%' }}>
+                                Mainkan Memory Match 🎮
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -184,6 +192,20 @@ function PermainanContent() {
                 <QuizModal 
                     kategori={activeKategori}
                     onClose={handleCloseQuiz}
+                />
+            )}
+
+            {/* Word Guess Modal Overlay */}
+            {showWordGuess && (
+                <WordGuessModal 
+                    onClose={() => setShowWordGuess(false)}
+                />
+            )}
+
+            {/* Memory Match Modal Overlay */}
+            {showMemoryMatch && (
+                <MemoryMatchModal 
+                    onClose={() => setShowMemoryMatch(false)}
                 />
             )}
         </main>

@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useToast } from '../../components/ToastContext';
 import { addXP, unlockBadge } from '../../utils/gamification';
 import { supabase, isSupabaseConfigured } from '../../utils/supabaseClient';
+import AdsterraBanner from '../../components/AdsterraBanner';
 
 const DEFAULT_MATERI = {
     "Fisika": [
@@ -427,6 +428,8 @@ function MateriContent() {
                     </div>
                 </>
             )}
+
+            {!isEditing && <AdsterraBanner />}
 
             <div className="materi-reader__content" style={{ padding: 0, overflow: 'hidden', height: '650px', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-glass)' }}>
                 <iframe

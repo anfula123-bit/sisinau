@@ -251,6 +251,16 @@ export default function ProfilPage() {
         showToast("Profil berhasil diperbarui! ✨");
     };
 
+    const handleLogout = () => {
+        localStorage.removeItem('loggedInUser');
+        window.dispatchEvent(new Event('userLoginChange'));
+        showToast("Berhasil keluar dari Sisinau!");
+
+        setTimeout(() => {
+            router.replace('/login');
+        }, 800);
+    };
+
     const level = Math.floor(xp / 200) + 1;
     const progressXp = xp % 200;
 
@@ -446,12 +456,18 @@ export default function ProfilPage() {
                 </div>
 
                 {!isEditing && (
-                    <Link href="/home" style={{ display: 'block', marginTop: 'var(--space-xl)', marginBottom: 'var(--space-2xl)' }}>
-                        <button className="btn btn--primary" style={{ width: '100%' }}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-                            Kembali Ke Beranda
+                    <div style={{ display: 'flex', gap: 'var(--space-md)', marginTop: 'var(--space-xl)', marginBottom: 'var(--space-2xl)' }}>
+                        <Link href="/home" style={{ flex: 1 }}>
+                            <button className="btn btn--primary" style={{ width: '100%' }}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+                                Beranda
+                            </button>
+                        </Link>
+                        <button className="btn--logout" style={{ flex: 1 }} onClick={handleLogout}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                            Keluar Akun
                         </button>
-                    </Link>
+                    </div>
                 )}
             </div>
         </main>

@@ -64,6 +64,10 @@ export default function UploadPage() {
                     .from('materials')
                     .upload(path, file);
 
+                if (uploadError) {
+                    console.error("Gagal mengunggah file ke Supabase Storage:", uploadError.message || uploadError);
+                }
+
                 if (uploadData && !uploadError) {
                     const { data: urlData } = supabase
                         .storage

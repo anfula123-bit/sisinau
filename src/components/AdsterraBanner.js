@@ -13,7 +13,7 @@ export default function AdsterraBanner() {
 
             // Define configuration key options for Adsterra banner (Leaderboard format 728x90)
             window.atOptions = {
-                'key' : '415d862024db4989679f2dc349cfbd6c',
+                'key' : 'c0c7037e97c7a9747f04b2e80badb044',
                 'format' : 'iframe',
                 'height' : 90,
                 'width' : 728,
@@ -22,7 +22,7 @@ export default function AdsterraBanner() {
 
             const script = document.createElement('script');
             script.type = 'text/javascript';
-            script.src = '//www.highperformanceformat.com/415d862024db4989679f2dc349cfbd6c/invoke.js';
+            script.src = '//www.highperformanceformat.com/c0c7037e97c7a9747f04b2e80badb044/invoke.js';
             script.async = true;
 
             bannerRef.current.appendChild(script);
@@ -31,7 +31,7 @@ export default function AdsterraBanner() {
 
     return (
         <div style={{ margin: 'var(--space-md) auto var(--space-lg) auto', display: 'flex', justifyContent: 'center', width: '100%', minHeight: '90px' }}>
-            <div ref={bannerRef} id="container-415d862024db4989679f2dc349cfbd6c" style={{ width: '100%', display: 'flex', justifyContent: 'center', position: 'relative' }}>
+            <div ref={bannerRef} id="container-c0c7037e97c7a9747f04b2e80badb044" style={{ width: '100%', display: 'flex', justifyContent: 'center', position: 'relative' }}>
                 {/* Fallback mockup banner visual when script is pending or blocked by AdBlocker */}
                 <div style={{
                     width: '100%',

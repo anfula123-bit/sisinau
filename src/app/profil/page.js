@@ -31,6 +31,8 @@ export default function ProfilPage() {
         uploadsCount: 0
     });
 
+    const [uploadedMaterials, setUploadedMaterials] = useState([]);
+
     useEffect(() => {
         const loggedIn = localStorage.getItem('loggedInUser');
         if (!loggedIn) {
@@ -102,6 +104,19 @@ export default function ProfilPage() {
                         uploadsCount: uploadsCount || 0
                     });
 
+                    // Fetch uploaded materials
+                    const { data: uploads } = await supabase
+                        .from('materials')
+                        .select('*')
+                        .eq('uploaded_by', loggedIn)
+                        .order('id', { ascending: true });
+
+                    const formattedUploads = (uploads || []).map((m, idx) => ({
+                        ...m,
+                        index: idx
+                    }));
+                    setUploadedMaterials(formattedUploads);
+
                 } catch (err) {
                     console.error("Gagal memuat profil dari Supabase:", err);
                     loadLocal();
@@ -149,6 +164,18 @@ export default function ProfilPage() {
                 bookmarksCount: bookmarks.length,
                 uploadsCount: uploadsCount
             });
+
+            // Load uploaded materials from local fallback
+            const custom = JSON.parse(localStorage.getItem('customMateri')) || {};
+            let list = [];
+            Object.entries(custom).forEach(([cat, items]) => {
+                items.forEach((item, idx) => {
+                    if (item.uploadedBy === loggedIn || !item.uploadedBy) {
+                        list.push({ ...item, kategori: cat, index: idx });
+                    }
+                });
+            });
+            setUploadedMaterials(list);
         };
 
         loadProfileData();
@@ -463,6 +490,49 @@ export default function ProfilPage() {
                         );
                     })}
                 </div>
+
+                {/* Materi yang Diunggah Section */}
+                {!isEditing && (
+                    <div className="profile-section" style={{ marginTop: 'var(--space-xl)', textAlign: 'left' }}>
+                        <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: 'var(--space-sm)', fontFamily: 'Outfit', fontSize: '1.2rem', color: 'var(--text-primary)' }}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+                            Materi yang Diunggah 📤
+                        </h3>
+                        {uploadedMaterials.length === 0 ? (
+                            <p style={{ color: 'var(--text-muted)', fontStyle: 'italic', fontSize: '0.9rem', padding: 'var(--space-md)', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-glass)' }}>Belum ada materi yang Anda unggah.</p>
+                        ) : (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
+                                {uploadedMaterials.map((m, i) => (
+                                    <Link 
+                                        key={i} 
+                                        href={`/materi?kategori=${m.kategori}&index=${m.index ?? i}&judul=${encodeURIComponent(m.judul)}&deskripsi=${encodeURIComponent(m.deskripsi)}`}
+                                        style={{ display: 'block', textDecoration: 'none' }}
+                                    >
+                                        <div style={{
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            padding: 'var(--space-md)',
+                                            background: 'var(--bg-secondary)',
+                                            border: '1px solid var(--border-glass)',
+                                            borderRadius: 'var(--radius-md)',
+                                            transition: 'all var(--transition-normal)',
+                                            cursor: 'pointer'
+                                        }} className="profile-uploaded-item">
+                                            <div style={{ textAlign: 'left' }}>
+                                                <h4 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--orange-400)', margin: 0 }}>{m.judul}</h4>
+                                                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>{m.deskripsi}</p>
+                                            </div>
+                                            <span className="badge-category" style={{ fontSize: '0.75rem', background: 'var(--bg-glass)', border: '1px solid var(--border-glass)', borderRadius: 'var(--radius-full)', padding: '2px 8px', color: 'var(--text-secondary)' }}>
+                                                {m.kategori}
+                                            </span>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 {!isEditing && (
                     <Link href="/home" style={{ display: 'block', marginTop: 'var(--space-xl)', marginBottom: 'var(--space-2xl)' }}>

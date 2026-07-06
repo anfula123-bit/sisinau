@@ -102,7 +102,8 @@ export default function UploadPage() {
             const newMateri = {
                 judul: judul.trim(),
                 deskripsi: deskripsi.trim(),
-                fileUrl: '/dummy materi.pdf' // Simulate storage location
+                fileUrl: '/dummy materi.pdf', // Simulate storage location
+                uploadedBy: loggedIn
             };
 
             if (!customMateri[kategori]) {

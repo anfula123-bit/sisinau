@@ -2188,3 +2188,15 @@ input, select, textarea {
         grid-template-columns: repeat(2, 1fr);
     }
 }
+
+.profile-uploaded-item {
+    transition: all var(--transition-normal);
+}
+
+.profile-uploaded-item:hover {
+    border-color: rgba(249, 115, 22, 0.3) !important;
+    background: var(--bg-card-hover) !important;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+

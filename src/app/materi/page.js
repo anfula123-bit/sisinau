@@ -64,6 +64,105 @@ function MateriContent() {
     // showQuiz state removed, quiz moved to /permainan
     const [allMateri, setAllMateri] = useState([]);
 
+    const [loggedInUser, setLoggedInUser] = useState('');
+    const [isEditing, setIsEditing] = useState(false);
+    const [editJudul, setEditJudul] = useState('');
+    const [editDeskripsi, setEditDeskripsi] = useState('');
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setLoggedInUser(localStorage.getItem('loggedInUser') || '');
+        }
+    }, []);
+
+    const startEdit = () => {
+        setEditJudul(judul);
+        setEditDeskripsi(deskripsi);
+        setIsEditing(true);
+    };
+
+    const handleSaveEdit = async () => {
+        if (!editJudul.trim() || !editDeskripsi.trim()) {
+            showToast("Judul dan deskripsi tidak boleh kosong!", "error");
+            return;
+        }
+
+        const currentItem = allMateri[index] || {};
+
+        if (isSupabaseConfigured) {
+            try {
+                const { error } = await supabase
+                    .from('materials')
+                    .update({
+                        judul: editJudul.trim(),
+                        deskripsi: editDeskripsi.trim()
+                    })
+                    .eq('id', currentItem.id);
+
+                if (error) throw error;
+            } catch (err) {
+                console.error(err);
+                showToast("Gagal menyimpan perubahan ke database!", "error");
+                return;
+            }
+        } else {
+            const custom = JSON.parse(localStorage.getItem('customMateri')) || {};
+            const catList = custom[kategori] || [];
+            if (catList[index]) {
+                catList[index].judul = editJudul.trim();
+                catList[index].deskripsi = editDeskripsi.trim();
+                custom[kategori] = catList;
+                localStorage.setItem('customMateri', JSON.stringify(custom));
+            }
+        }
+
+        showToast("Materi berhasil diperbarui! ✨");
+        setIsEditing(false);
+
+        const encJ = encodeURIComponent(editJudul.trim());
+        const encD = encodeURIComponent(editDeskripsi.trim());
+        router.replace(`/materi?kategori=${kategori}&index=${index}&judul=${encJ}&deskripsi=${encD}`);
+        
+        setAllMateri(prev => {
+            const updated = [...prev];
+            if (updated[index]) {
+                updated[index].judul = editJudul.trim();
+                updated[index].deskripsi = editDeskripsi.trim();
+            }
+            return updated;
+        });
+    };
+
+    const handleDeleteMateri = async () => {
+        if (!confirm("Apakah Anda yakin ingin menghapus materi ini selamanya?")) return;
+
+        const currentItem = allMateri[index] || {};
+
+        if (isSupabaseConfigured) {
+            try {
+                const { error } = await supabase
+                    .from('materials')
+                    .delete()
+                    .eq('id', currentItem.id);
+
+                if (error) throw error;
+            } catch (err) {
+                console.error(err);
+                showToast("Gagal menghapus materi dari database!", "error");
+                return;
+            }
+        } else {
+            const custom = JSON.parse(localStorage.getItem('customMateri')) || {};
+            const catList = custom[kategori] || [];
+            catList.splice(index, 1);
+            custom[kategori] = catList;
+            localStorage.setItem('customMateri', JSON.stringify(custom));
+        }
+
+        showToast("Materi berhasil dihapus!");
+        router.replace(`/list-materi?kategori=${kategori}`);
+    };
+
     // Check auth
     useEffect(() => {
         const loggedIn = localStorage.getItem('loggedInUser');
@@ -237,7 +336,9 @@ function MateriContent() {
     }
 
     const currentItem = allMateri[index] || {};
-    const isCustomUpload = !!currentItem.fileUrl;
+    const isCustomUpload = !!currentItem.fileUrl || !!currentItem.file_url;
+    const uploader = currentItem.uploaded_by || currentItem.uploadedBy || 'Sisinau';
+    const isUploader = uploader === loggedInUser && uploader !== 'Sisinau';
 
     return (
         <div className="materi-reader">
@@ -270,8 +371,62 @@ function MateriContent() {
             )}
 
             {/* Content Details */}
-            <h1 className="materi-reader__title">{judul}</h1>
-            <p className="materi-reader__desc">({deskripsi})</p>
+            {isEditing ? (
+                <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-glass)', padding: 'var(--space-lg)', borderRadius: 'var(--radius-lg)', marginBottom: 'var(--space-xl)', textAlign: 'left' }}>
+                    <div className="form-group" style={{ marginBottom: 'var(--space-md)' }}>
+                        <label className="form-label">Judul Materi</label>
+                        <input 
+                            type="text" 
+                            className="form-input" 
+                            value={editJudul} 
+                            onChange={(e) => setEditJudul(e.target.value)} 
+                        />
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 'var(--space-md)' }}>
+                        <label className="form-label">Deskripsi Singkat</label>
+                        <textarea 
+                            className="form-input" 
+                            value={editDeskripsi} 
+                            onChange={(e) => setEditDeskripsi(e.target.value)}
+                            style={{ minHeight: '80px', resize: 'vertical' }}
+                        />
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                        <button className="btn btn--primary" onClick={handleSaveEdit} style={{ padding: '8px 16px', fontSize: '0.85rem' }}>Simpan</button>
+                        <button className="btn btn--ghost" onClick={() => setIsEditing(false)} style={{ padding: '8px 16px', fontSize: '0.85rem' }}>Batal</button>
+                    </div>
+                </div>
+            ) : (
+                <>
+                    <h1 className="materi-reader__title">{judul}</h1>
+                    <p className="materi-reader__desc">({deskripsi})</p>
+                    
+                    <div style={{ marginTop: '-12px', marginBottom: 'var(--space-lg)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--space-sm)' }}>
+                        <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                            Diupload oleh: <strong style={{ color: 'var(--orange-400)' }}>{uploader}</strong>
+                        </p>
+                        
+                        {isUploader && (
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                                <button 
+                                    onClick={startEdit}
+                                    className="btn btn--ghost"
+                                    style={{ padding: '6px 12px', fontSize: '0.8rem', borderRadius: 'var(--radius-sm)' }}
+                                >
+                                    Edit
+                                </button>
+                                <button 
+                                    onClick={handleDeleteMateri}
+                                    className="btn btn--logout"
+                                    style={{ padding: '6px 12px', fontSize: '0.8rem', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(239,68,68,0.3)', color: '#ef4444', background: 'transparent', marginTop: 0 }}
+                                >
+                                    Hapus
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </>
+            )}
 
             <div className="materi-reader__content" style={{ padding: 0, overflow: 'hidden', height: '650px', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-glass)' }}>
                 <iframe

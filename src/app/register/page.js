@@ -166,15 +166,6 @@ export default function RegisterPage() {
 
                     <button type="submit" className="btn btn--primary" style={{ marginTop: '8px' }}>Daftar</button>
 
-                    <div className="auth-divider">
-                        <span>atau</span>
-                    </div>
-
-                    <button type="button" className="btn btn--google">
-                        <img src="/images/google.png" alt="Google" />
-                        Daftar dengan Google
-                    </button>
-
                     <p style={{ textAlign: 'center', fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '8px' }}>
                         Sudah punya akun? <Link href="/login" style={{ color: 'var(--orange-400)', fontWeight: 600 }}>Masuk</Link>
                     </p>

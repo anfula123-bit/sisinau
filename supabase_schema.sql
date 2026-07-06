@@ -80,3 +80,23 @@ INSERT INTO public.materials (kategori, judul, deskripsi, file_url) VALUES
 ('Bahasa', 'Teks Eksposisi', 'Ciri-ciri dan struktur teks eksposisi.', '/dummy materi.pdf'),
 ('Bahasa', 'Puisi', 'Unsur dan makna dalam puisi.', '/dummy materi.pdf')
 ON CONFLICT DO NOTHING;
+
+-- 7. Disable Row Level Security (RLS) to allow public anonymous read/write operations (highly recommended for test/school projects)
+ALTER TABLE public.users DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.profiles DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_badges DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.materials DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.bookmarks DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.quiz_stats DISABLE ROW LEVEL SECURITY;
+
+-- 8. Grant all privileges on tables to anon and authenticated roles
+GRANT ALL ON public.users TO anon, authenticated, service_role;
+GRANT ALL ON public.profiles TO anon, authenticated, service_role;
+GRANT ALL ON public.user_badges TO anon, authenticated, service_role;
+GRANT ALL ON public.materials TO anon, authenticated, service_role;
+GRANT ALL ON public.bookmarks TO anon, authenticated, service_role;
+GRANT ALL ON public.quiz_stats TO anon, authenticated, service_role;
+
+-- 9. Grant all privileges on all sequences to anon and authenticated roles (required for auto-incrementing IDs)
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role;
+

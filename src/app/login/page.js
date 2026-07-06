@@ -115,15 +115,6 @@ export default function LoginPage() {
                     </div>
 
                     <button type="submit" className="btn btn--primary" style={{ marginTop: '8px' }}>Masuk</button>
-
-                    <div className="auth-divider">
-                        <span>atau</span>
-                    </div>
-
-                    <button type="button" className="btn btn--google">
-                        <img src="/images/google.png" alt="Google" />
-                        Masuk dengan Google
-                    </button>
                 </form>
             </div>
         </main>

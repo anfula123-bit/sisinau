@@ -81,22 +81,35 @@ INSERT INTO public.materials (kategori, judul, deskripsi, file_url) VALUES
 ('Bahasa', 'Puisi', 'Unsur dan makna dalam puisi.', '/dummy materi.pdf')
 ON CONFLICT DO NOTHING;
 
--- 7. Disable Row Level Security (RLS) to allow public anonymous read/write operations (highly recommended for test/school projects)
+-- 7. Comments table (stores discussions per material)
+CREATE TABLE IF NOT EXISTS public.comments (
+    id SERIAL PRIMARY KEY,
+    material_id INTEGER REFERENCES public.materials(id) ON DELETE CASCADE,
+    fallback_key VARCHAR(255),
+    username VARCHAR(255) REFERENCES public.users(username) ON DELETE CASCADE,
+    comment TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 8. Disable Row Level Security (RLS) to allow public anonymous read/write operations (highly recommended for test/school projects)
 ALTER TABLE public.users DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.profiles DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_badges DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.materials DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.bookmarks DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.quiz_stats DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.comments DISABLE ROW LEVEL SECURITY;
 
--- 8. Grant all privileges on tables to anon and authenticated roles
+-- 9. Grant all privileges on tables to anon and authenticated roles
 GRANT ALL ON public.users TO anon, authenticated, service_role;
 GRANT ALL ON public.profiles TO anon, authenticated, service_role;
 GRANT ALL ON public.user_badges TO anon, authenticated, service_role;
 GRANT ALL ON public.materials TO anon, authenticated, service_role;
 GRANT ALL ON public.bookmarks TO anon, authenticated, service_role;
 GRANT ALL ON public.quiz_stats TO anon, authenticated, service_role;
+GRANT ALL ON public.comments TO anon, authenticated, service_role;
 
--- 9. Grant all privileges on all sequences to anon and authenticated roles (required for auto-incrementing IDs)
+-- 10. Grant all privileges on all sequences to anon and authenticated roles (required for auto-incrementing IDs)
 GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role;
+
 

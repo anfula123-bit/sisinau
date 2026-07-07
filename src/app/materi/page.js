@@ -326,6 +326,159 @@ function MateriContent() {
         }
     };
 
+    // ============================================
+    // DISCUSSION / COMMENT FORUM LOGIC
+    // ============================================
+    const [comments, setComments] = useState([]);
+    const [newComment, setNewComment] = useState('');
+
+    const loadComments = async () => {
+        if (!judul) return;
+        const currentItem = allMateri[index] || {};
+        if (isSupabaseConfigured) {
+            try {
+                let query = supabase
+                    .from('comments')
+                    .select('*, profiles(name, avatar_url)');
+                
+                if (currentItem.id) {
+                    query = query.eq('material_id', currentItem.id);
+                } else {
+                    query = query.eq('fallback_key', `${kategori}_${judul}`);
+                }
+                
+                const { data, error } = await query.order('id', { ascending: true });
+                if (error) throw error;
+                setComments(data || []);
+            } catch (err) {
+                console.error("Gagal memuat diskusi:", err);
+                loadLocalComments();
+            }
+        } else {
+            loadLocalComments();
+        }
+    };
+
+    const loadLocalComments = () => {
+        const key = `${kategori}_${judul}`;
+        const allComments = JSON.parse(localStorage.getItem('materi_comments') || '[]');
+        const filtered = allComments.filter(c => c.fallback_key === key);
+        setComments(filtered);
+    };
+
+    useEffect(() => {
+        if (allMateri.length > 0) {
+            loadComments();
+        }
+    }, [judul, kategori, allMateri, index]);
+
+    const handleSendComment = async (e) => {
+        e.preventDefault();
+        if (!newComment.trim()) return;
+        const loggedIn = localStorage.getItem('loggedInUser');
+        if (!loggedIn) {
+            showToast("Harap login terlebih dahulu untuk ikut berdiskusi!", "error");
+            return;
+        }
+
+        const currentItem = allMateri[index] || {};
+        const fallbackKey = `${kategori}_${judul}`;
+        
+        if (isSupabaseConfigured) {
+            try {
+                const insertData = {
+                    username: loggedIn,
+                    comment: newComment.trim(),
+                    fallback_key: fallbackKey
+                };
+                if (currentItem.id) {
+                    insertData.material_id = currentItem.id;
+                }
+                const { error } = await supabase
+                    .from('comments')
+                    .insert(insertData);
+                
+                if (error) throw error;
+                setNewComment('');
+                showToast("Komentar berhasil dikirim! 💬");
+                addXP(10, showToast);
+                loadComments();
+            } catch (err) {
+                console.error("Gagal mengirim komentar:", err);
+                showToast("Gagal mengirim komentar ke server!", "error");
+            }
+        } else {
+            const allComments = JSON.parse(localStorage.getItem('materi_comments') || '[]');
+            const savedProfile = JSON.parse(localStorage.getItem('profile_' + loggedIn)) || {};
+            const savedAvatar = localStorage.getItem('profile_avatar_' + loggedIn) || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
+            
+            const newComm = {
+                id: Date.now(),
+                fallback_key: fallbackKey,
+                username: loggedIn,
+                comment: newComment.trim(),
+                created_at: new Date().toISOString(),
+                profiles: {
+                    name: savedProfile.name || loggedIn,
+                    avatar_url: savedAvatar
+                }
+            };
+            
+            allComments.push(newComm);
+            localStorage.setItem('materi_comments', JSON.stringify(allComments));
+            setNewComment('');
+            showToast("Komentar berhasil dikirim! 💬");
+            addXP(10, showToast);
+            loadComments();
+        }
+    };
+
+    const handleDeleteComment = async (commentId) => {
+        if (!confirm("Apakah Anda yakin ingin menghapus komentar ini?")) return;
+        
+        if (isSupabaseConfigured) {
+            try {
+                const { error } = await supabase
+                    .from('comments')
+                    .delete()
+                    .eq('id', commentId);
+                
+                if (error) throw error;
+                showToast("Komentar berhasil dihapus!");
+                loadComments();
+            } catch (err) {
+                console.error("Gagal menghapus komentar:", err);
+                showToast("Gagal menghapus komentar!", "error");
+            }
+        } else {
+            const allComments = JSON.parse(localStorage.getItem('materi_comments') || '[]');
+            const filtered = allComments.filter(c => c.id !== commentId);
+            localStorage.setItem('materi_comments', JSON.stringify(filtered));
+            showToast("Komentar berhasil dihapus!");
+            loadComments();
+        }
+    };
+
+    const formatRelativeTime = (isoString) => {
+        if (!isoString) return '';
+        const date = new Date(isoString);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        
+        if (diffMins < 1) return 'Baru saja';
+        if (diffMins < 60) return `${diffMins} menit yang lalu`;
+        
+        const diffHours = Math.floor(diffMins / 60);
+        if (diffHours < 24) return `${diffHours} jam yang lalu`;
+        
+        const diffDays = Math.floor(diffHours / 24);
+        if (diffDays === 1) return 'Kemarin';
+        if (diffDays < 7) return `${diffDays} hari yang lalu`;
+        
+        return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+    };
+
     if (!judul) {
         return (
             <div className="materi-reader" style={{ textAlign: 'center' }}>
@@ -449,6 +602,75 @@ function MateriContent() {
                     Kerjakan Kuis
                 </Link>
             </div>
+
+            {/* Forum Diskusi Section */}
+            <section className="discussion-section">
+                <h3 className="discussion-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    Forum Diskusi <span>Sisinau</span> 💬
+                </h3>
+
+                <form onSubmit={handleSendComment} className="discussion-form">
+                    <textarea 
+                        placeholder="Tulis pertanyaan atau pendapatmu tentang materi ini..." 
+                        value={newComment} 
+                        onChange={(e) => setNewComment(e.target.value)}
+                        required
+                    />
+                    <div className="discussion-form__footer">
+                        <button type="submit" className="btn-send-comment">
+                            Kirim Komentar 
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: '4px' }}><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                        </button>
+                    </div>
+                </form>
+
+                <div className="comment-list">
+                    {comments.length === 0 ? (
+                        <div className="comment-empty">
+                            Belum ada diskusi di sini. Jadilah yang pertama berkomentar! 💡
+                        </div>
+                    ) : (
+                        comments.map((comment) => {
+                            const commenter = comment.username;
+                            const displayName = comment.profiles?.name || commenter;
+                            const avatarUrl = comment.profiles?.avatar_url || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
+                            const isCommentAuthor = commenter === loggedInUser;
+
+                            return (
+                                <div key={comment.id} className="comment-card">
+                                    <img 
+                                        src={avatarUrl} 
+                                        alt={displayName} 
+                                        className="comment-avatar"
+                                        onError={(e) => {
+                                            e.target.onerror = null; 
+                                            e.target.src = 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
+                                        }}
+                                    />
+                                    <div className="comment-body">
+                                        <div className="comment-meta">
+                                            <span className="comment-user">{displayName}</span>
+                                            <span className="comment-time">{formatRelativeTime(comment.created_at)}</span>
+                                        </div>
+                                        <p className="comment-text">{comment.comment}</p>
+                                    </div>
+                                    {isCommentAuthor && (
+                                        <button 
+                                            type="button"
+                                            onClick={() => handleDeleteComment(comment.id)} 
+                                            className="comment-delete"
+                                            title="Hapus Komentar"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                                        </button>
+                                    )}
+                                </div>
+                            );
+                        })
+                    )}
+                </div>
+            </section>
         </div>
     );
 }

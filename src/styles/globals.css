@@ -2316,3 +2316,205 @@ input, select, textarea {
     box-shadow: var(--shadow-sm);
 }
 
+/* ============================================
+   COMMUNITY DISCUSSION FORUM
+   ============================================ */
+.discussion-section {
+    margin-top: var(--space-2xl);
+    padding-top: var(--space-xl);
+    border-top: 1px solid var(--border-glass);
+    text-align: left;
+}
+
+.discussion-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.discussion-title span {
+    background: var(--gradient-brand);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.discussion-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-lg);
+    padding: var(--space-md);
+    margin-bottom: var(--space-xl);
+    box-shadow: var(--shadow-sm);
+}
+
+.discussion-form textarea {
+    background: rgba(0, 0, 0, 0.12);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    min-height: 80px;
+    resize: vertical;
+    outline: none;
+    transition: all var(--transition-normal);
+}
+
+.light-theme .discussion-form textarea {
+    background: rgba(15, 23, 42, 0.03);
+}
+
+.discussion-form textarea:focus {
+    border-color: var(--orange-400);
+    box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.15);
+}
+
+.discussion-form__footer {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-send-comment {
+    background: var(--gradient-brand);
+    border: none;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 10px 20px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    transition: all var(--transition-fast);
+}
+
+.btn-send-comment:hover {
+    background: var(--gradient-brand-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
+}
+
+.btn-send-comment:active {
+    transform: translateY(0);
+}
+
+.comment-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.comment-card {
+    display: flex;
+    gap: var(--space-md);
+    background: var(--bg-card);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    position: relative;
+    transition: all var(--transition-normal);
+    animation: slideInUp 0.3s ease;
+}
+
+.comment-card:hover {
+    background: var(--bg-card-hover);
+    border-color: rgba(249, 115, 22, 0.25);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.comment-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-full);
+    object-fit: cover;
+    border: 2px solid var(--border-glass);
+    flex-shrink: 0;
+}
+
+.comment-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.comment-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: 0.85rem;
+}
+
+.comment-user {
+    font-weight: 600;
+    color: var(--orange-400);
+}
+
+.comment-time {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+}
+
+.comment-text {
+    color: var(--text-primary);
+    font-size: 0.92rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    margin: 4px 0 0 0;
+}
+
+.comment-delete {
+    position: absolute;
+    top: var(--space-md);
+    right: var(--space-md);
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.comment-delete:hover {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.comment-empty {
+    text-align: center;
+    color: var(--text-muted);
+    padding: var(--space-xl) 0;
+    font-style: italic;
+    font-size: 0.9rem;
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px dashed var(--border-glass);
+    border-radius: var(--radius-md);
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+

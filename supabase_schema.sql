@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS public.comments (
     id SERIAL PRIMARY KEY,
     material_id INTEGER REFERENCES public.materials(id) ON DELETE CASCADE,
     fallback_key VARCHAR(255),
-    username VARCHAR(255) REFERENCES public.users(username) ON DELETE CASCADE,
+    username VARCHAR(255) REFERENCES public.profiles(username) ON DELETE CASCADE,
     comment TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

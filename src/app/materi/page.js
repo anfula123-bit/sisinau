@@ -65,6 +65,9 @@ function MateriContent() {
     // showQuiz state removed, quiz moved to /permainan
     const [allMateri, setAllMateri] = useState([]);
 
+    // Find active material by title matching URL parameter (robust)
+    const currentItem = allMateri.find(m => m.judul === judul) || allMateri[index] || {};
+
     const [loggedInUser, setLoggedInUser] = useState('');
     const [isEditing, setIsEditing] = useState(false);
     const [editJudul, setEditJudul] = useState('');
@@ -87,8 +90,6 @@ function MateriContent() {
             showToast("Judul dan deskripsi tidak boleh kosong!", "error");
             return;
         }
-
-        const currentItem = allMateri[index] || {};
 
         if (isSupabaseConfigured) {
             try {
@@ -136,8 +137,6 @@ function MateriContent() {
 
     const handleDeleteMateri = async () => {
         if (!confirm("Apakah Anda yakin ingin menghapus materi ini selamanya?")) return;
-
-        const currentItem = allMateri[index] || {};
 
         if (isSupabaseConfigured) {
             try {
@@ -331,10 +330,8 @@ function MateriContent() {
     // ============================================
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
-
     const loadComments = async () => {
         if (!judul) return;
-        const currentItem = allMateri[index] || {};
         if (isSupabaseConfigured) {
             try {
                 let query = supabase
@@ -381,7 +378,6 @@ function MateriContent() {
             return;
         }
 
-        const currentItem = allMateri[index] || {};
         const fallbackKey = `${kategori}_${judul}`;
         
         if (isSupabaseConfigured) {
@@ -489,7 +485,6 @@ function MateriContent() {
         );
     }
 
-    const currentItem = allMateri[index] || {};
     const isCustomUpload = !!currentItem.fileUrl || !!currentItem.file_url;
     const uploader = currentItem.uploaded_by || currentItem.uploadedBy || 'Sisinau';
     const isUploader = uploader === loggedInUser && uploader !== 'Sisinau';

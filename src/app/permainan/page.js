@@ -7,6 +7,7 @@ import QuizModal from '../../components/QuizModal';
 import { useToast } from '../../components/ToastContext';
 import WordGuessModal from '../../components/WordGuessModal';
 import MemoryMatchModal from '../../components/MemoryMatchModal';
+import DuelOtakModal from '../../components/DuelOtakModal';
 
 const KATEGORI_KUIS = [
     { name: 'Fisika', color: '#a855f7', bgGlow: 'rgba(168, 85, 247, 0.15)' },
@@ -31,6 +32,7 @@ function PermainanContent() {
     const [activeKategori, setActiveKategori] = useState(null);
     const [showWordGuess, setShowWordGuess] = useState(false);
     const [showMemoryMatch, setShowMemoryMatch] = useState(false);
+    const [showDuelOtak, setShowDuelOtak] = useState(false);
 
     // Auth & Load Stats
     useEffect(() => {
@@ -176,6 +178,22 @@ function PermainanContent() {
                             </button>
                         </div>
                     </div>
+
+                    {/* Game Card 4: Duel Otak (Active) */}
+                    <div className="game-card game-card--active">
+                        <div className="game-card__header">
+                            <span className="game-card__badge game-card__badge--play">Bisa Dimainkan</span>
+                            <h2>Duel Otak (1v1 Quiz Battle) ⚔️</h2>
+                        </div>
+                        <p className="game-card__desc">
+                            Tantang lawan dalam duel kuis cepat 1v1! Uji pengetahuan sains dan matematika Anda. Menjawab lebih cepat untuk mendapatkan poin lebih banyak!
+                        </p>
+                        <div className="game-card__footer" style={{ marginTop: 'var(--space-md)' }}>
+                            <button className="btn btn--primary" onClick={() => setShowDuelOtak(true)} style={{ width: '100%' }}>
+                                Mainkan Duel Otak ⚔️
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Back to Home Button */}
@@ -206,6 +224,13 @@ function PermainanContent() {
             {showMemoryMatch && (
                 <MemoryMatchModal 
                     onClose={() => setShowMemoryMatch(false)}
+                />
+            )}
+
+            {/* Duel Otak Modal Overlay */}
+            {showDuelOtak && (
+                <DuelOtakModal 
+                    onClose={() => setShowDuelOtak(false)}
                 />
             )}
         </main>

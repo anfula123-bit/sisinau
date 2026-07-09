@@ -112,4 +112,16 @@ GRANT ALL ON public.comments TO anon, authenticated, service_role;
 -- 10. Grant all privileges on all sequences to anon and authenticated roles (required for auto-incrementing IDs)
 GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role;
 
+-- 11. Chatbot Usage table (stores daily chat usage per user)
+CREATE TABLE IF NOT EXISTS public.chatbot_usage (
+    username VARCHAR(255) REFERENCES public.users(username) ON DELETE CASCADE,
+    chat_date DATE DEFAULT CURRENT_DATE,
+    chat_count INTEGER DEFAULT 1,
+    PRIMARY KEY (username, chat_date)
+);
+
+ALTER TABLE public.chatbot_usage DISABLE ROW LEVEL SECURITY;
+GRANT ALL ON public.chatbot_usage TO anon, authenticated, service_role;
+
+
 

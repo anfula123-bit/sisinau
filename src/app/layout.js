@@ -1,6 +1,8 @@
 import '../styles/globals.css';
 import { ToastProvider } from '../components/ToastContext';
 import Navbar from '../components/Navbar';
+import Chatbot from '../components/Chatbot';
+
 
 export const metadata = {
   title: {
@@ -64,6 +66,7 @@ export default function RootLayout({ children }) {
         <ToastProvider>
           <Navbar />
           {children}
+          <Chatbot />
         </ToastProvider>
       </body>
     </html>
